@@ -1,0 +1,44 @@
+node_modules/
+.next/
+out/
+build/
+dist/
+coverage/
+.turbo/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+
+# Docker
+postgres_data/
+redis_data/
+
+# Misc
+*.tsbuildinfo
