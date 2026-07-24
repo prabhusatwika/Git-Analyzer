@@ -19,6 +19,19 @@ class RepositoryIndexingService:
 
         print(f"Found {len(chunks)} chunks")
 
+        # -----------------------------
+        # Remove previous embeddings
+        # -----------------------------
+        try:
+            self.chroma_service.collection.delete(
+                where={
+                    "repository": repository_name
+                }
+            )
+            print(f"Deleted previous embeddings for {repository_name}")
+        except Exception as e:
+            print(f"No previous embeddings to delete: {e}")
+
         stored = 0
 
         for chunk in chunks:
