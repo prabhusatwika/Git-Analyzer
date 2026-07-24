@@ -98,17 +98,7 @@ async function searchUserRepositories(
 /** Map a GitHub API repository to the payload expected by our backend. */
 export function toConnectPayload(repo: GitHubRepository) {
   return {
-    github_repo_id: repo.id,
-    name: repo.name,
-    full_name: repo.full_name,
-    description: repo.description,
-    language: repo.language,
-    stars: repo.stargazers_count,
-    forks: repo.forks_count,
-    is_private: repo.private,
-    default_branch: repo.default_branch,
-    html_url: repo.html_url,
-    updated_at_github: repo.updated_at,
+    url: repo.html_url,
   };
 }
 

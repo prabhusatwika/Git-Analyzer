@@ -60,3 +60,18 @@ async def semantic_search(
         )
 
     return SearchResponse(results=response)
+@router.get("/debug/{repository_name}")
+async def debug_repository(repository_name: str):
+
+    collection = service.chroma.collection
+
+    results = collection.get(
+        where={"repository": repository_name},
+        include=["documents", "metadatas"],
+    )
+
+    return {
+        "repository": repository_name,
+        "count": len(results["ids"]),
+        "metadatas": results["metadatas"][:5],
+    }
