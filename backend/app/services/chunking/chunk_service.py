@@ -1,12 +1,10 @@
-from pathlib import Path
-
 import uuid
+from pathlib import Path
 
 from app.services.parser.file_parser import FileParser
 
 
 class ChunkService:
-
     CHUNK_SIZE = 1200
     CHUNK_OVERLAP = 250
 
@@ -20,7 +18,6 @@ class ChunkService:
         start = 0
 
         while start < len(text):
-
             end = start + self.CHUNK_SIZE
 
             chunks.append(text[start:end])
@@ -40,7 +37,6 @@ class ChunkService:
         chunk_data = []
 
         for file in files:
-
             content = self.parser.read_file(file)
 
             if not content or not content.strip():
@@ -49,7 +45,6 @@ class ChunkService:
             chunks = self.split_text(content)
 
             for index, chunk in enumerate(chunks):
-
                 chunk_data.append(
                     {
                         "id": str(uuid.uuid4()),

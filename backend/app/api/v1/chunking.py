@@ -4,7 +4,6 @@ from app.schemas.chunk import (
     ChunkRequest,
     ChunkResponse,
 )
-
 from app.services.chunking.chunk_service import ChunkService
 
 router = APIRouter(

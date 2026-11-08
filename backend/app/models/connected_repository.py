@@ -28,8 +28,12 @@ class ConnectedRepository(Base):
     is_private: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     default_branch: Mapped[str] = mapped_column(String(255), default="main", nullable=False)
     html_url: Mapped[str] = mapped_column(String(512), nullable=False)
-    updated_at_github: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    connected_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at_github: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    connected_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
     user: Mapped["User"] = relationship("User", back_populates="connected_repository")
 

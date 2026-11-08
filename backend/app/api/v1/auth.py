@@ -8,6 +8,4 @@ router = APIRouter(
 
 @router.get("/")
 async def auth_health():
-    return {
-        "message": "Authentication API is working"
-    }
+    return {"message": "Authentication API is working"}

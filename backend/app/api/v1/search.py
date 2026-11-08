@@ -5,7 +5,6 @@ from app.schemas.search import (
     SearchResponse,
     SearchResult,
 )
-
 from app.services.search.semantic_search_service import (
     SemanticSearchService,
 )
@@ -20,9 +19,7 @@ service = SemanticSearchService()
 
 @router.get("/")
 async def search_health():
-    return {
-        "message": "Search API is working"
-    }
+    return {"message": "Search API is working"}
 
 
 @router.post(
@@ -34,9 +31,9 @@ async def semantic_search(
 ):
 
     result = service.search(
-    request.repository_name,
-    request.query,
-)
+        request.repository_name,
+        request.query,
+    )
 
     docs = result["documents"][0]
     metas = result["metadatas"][0]
@@ -49,7 +46,6 @@ async def semantic_search(
         metas,
         distances,
     ):
-
         response.append(
             SearchResult(
                 file_path=meta["file_path"],
@@ -60,6 +56,8 @@ async def semantic_search(
         )
 
     return SearchResponse(results=response)
+
+
 @router.get("/debug/{repository_name}")
 async def debug_repository(repository_name: str):
 

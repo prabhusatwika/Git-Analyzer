@@ -4,7 +4,6 @@ from app.services.vectorstore.chroma_service import ChromaService
 
 
 class EmbeddingService:
-
     def __init__(self):
 
         self.chunk_service = ChunkService()
@@ -22,10 +21,7 @@ class EmbeddingService:
         stored = 0
 
         for chunk in chunks:
-
-            embedding = self.embedding_model.generate_embedding(
-                chunk["content"]
-            )
+            embedding = self.embedding_model.generate_embedding(chunk["content"])
 
             metadata = {
                 "file_path": chunk["file_path"],
@@ -43,13 +39,8 @@ class EmbeddingService:
             stored += 1
 
         return {
-
             "repository_name": result["repository_name"],
-
             "chunks_processed": len(chunks),
-
             "embeddings_created": stored,
-
-            "total_vectors_in_chromadb":
-                self.chroma.count_embeddings(),
+            "total_vectors_in_chromadb": self.chroma.count_embeddings(),
         }

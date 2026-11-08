@@ -4,7 +4,6 @@ from app.services.vectorstore.chroma_service import ChromaService
 
 
 class RepositoryIndexingService:
-
     def __init__(self):
         self.chunk_service = ChunkService()
         self.embedding_service = LocalEmbeddingService()
@@ -39,11 +38,7 @@ class RepositoryIndexingService:
         # Remove previous embeddings
         # -----------------------------
         try:
-            self.chroma_service.collection.delete(
-                where={
-                    "repository": repository_name
-                }
-            )
+            self.chroma_service.collection.delete(where={"repository": repository_name})
             print(f"Deleted previous embeddings for {repository_name}")
         except Exception as e:
             print(f"No previous embeddings to delete: {e}")
@@ -51,12 +46,8 @@ class RepositoryIndexingService:
         stored = 0
 
         for chunk in chunks:
-
             try:
-
-                embedding = self.embedding_service.generate_embedding(
-                    chunk["content"]
-                )
+                embedding = self.embedding_service.generate_embedding(chunk["content"])
 
                 self.chroma_service.add_embedding(
                     chunk_id=chunk["id"],
@@ -81,14 +72,10 @@ class RepositoryIndexingService:
             "chunks": len(chunks),
             "stored": stored,
         }
-    
+
     def delete_repository_embeddings(self, repository_name: str):
         try:
-            self.chroma_service.collection.delete(
-                where={
-                    "repository": repository_name
-                }
-            )
+            self.chroma_service.collection.delete(where={"repository": repository_name})
 
             print(f"Deleted embeddings for {repository_name}")
 

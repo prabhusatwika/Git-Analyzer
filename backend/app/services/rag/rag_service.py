@@ -1,14 +1,13 @@
 from pathlib import Path
 
-from app.services.search.semantic_search_service import SemanticSearchService
 from app.services.llm.llm_service import LLMService
+from app.services.rag.file_detector import FileDetector
 from app.services.rag.prompt_service import PromptService
 from app.services.rag.question_classifier import QuestionClassifier
-from app.services.rag.file_detector import FileDetector
+from app.services.search.semantic_search_service import SemanticSearchService
 
 
 class RAGService:
-
     def __init__(self):
         self.search_service = SemanticSearchService()
         self.llm_service = LLMService()
@@ -44,7 +43,6 @@ class RAGService:
 
         # File-specific retrieval
         if file_name:
-
             filtered_results = self.search_service.filter_results_by_file(
                 search_results,
                 file_name,
@@ -67,7 +65,6 @@ class RAGService:
         context_parts = []
 
         for i, (doc, meta) in enumerate(zip(documents, metadatas), start=1):
-
             file_path = meta.get("file_path", "Unknown File")
             language = meta.get("language", "")
 
@@ -76,7 +73,7 @@ class RAGService:
 
                 if "repositories" in path.parts:
                     index = path.parts.index("repositories")
-                    relative_path = "/".join(path.parts[index + 2:])
+                    relative_path = "/".join(path.parts[index + 2 :])
                 else:
                     relative_path = path.name
 
@@ -99,21 +96,18 @@ Language: {language}
         context = "\n".join(context_parts)
 
         if intent == "repository":
-
             prompt = self.prompt_service.build_repository_prompt(
                 context=context,
                 question=question,
             )
 
         elif intent == "file":
-
             prompt = self.prompt_service.build_file_prompt(
                 context=context,
                 question=question,
             )
 
         else:
-
             prompt = self.prompt_service.build_code_prompt(
                 context=context,
                 question=question,
@@ -128,7 +122,6 @@ Language: {language}
         seen = set()
 
         for meta in metadatas:
-
             file_path = meta.get("file_path", "")
             language = meta.get("language", "")
 
@@ -137,7 +130,7 @@ Language: {language}
 
                 if "repositories" in path.parts:
                     index = path.parts.index("repositories")
-                    relative_path = "/".join(path.parts[index + 2:])
+                    relative_path = "/".join(path.parts[index + 2 :])
                 else:
                     relative_path = path.name
 

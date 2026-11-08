@@ -57,7 +57,9 @@ CONNECT_PAYLOAD = {
 
 
 def test_connect_and_get_repository(client):
-    response = client.post("/api/v1/repositories/connect", json=CONNECT_PAYLOAD, headers=USER_HEADERS)
+    response = client.post(
+        "/api/v1/repositories/connect", json=CONNECT_PAYLOAD, headers=USER_HEADERS
+    )
     assert response.status_code == 201
     data = response.json()
     assert data["full_name"] == "octocat/Hello-World"
@@ -69,7 +71,9 @@ def test_connect_and_get_repository(client):
 
 def test_connect_duplicate_returns_conflict(client):
     client.post("/api/v1/repositories/connect", json=CONNECT_PAYLOAD, headers=USER_HEADERS)
-    response = client.post("/api/v1/repositories/connect", json=CONNECT_PAYLOAD, headers=USER_HEADERS)
+    response = client.post(
+        "/api/v1/repositories/connect", json=CONNECT_PAYLOAD, headers=USER_HEADERS
+    )
     assert response.status_code == 409
 
 
