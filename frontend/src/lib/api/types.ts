@@ -17,17 +17,7 @@ export interface ConnectedRepositoryRecord {
 }
 
 export interface ConnectRepositoryPayload {
-  github_repo_id: number;
-  name: string;
-  full_name: string;
-  description: string | null;
-  language: string | null;
-  stars: number;
-  forks: number;
-  is_private: boolean;
-  default_branch: string;
-  html_url: string;
-  updated_at_github: string | null;
+  url: string;
 }
 
 export class BackendApiError extends Error {

@@ -47,7 +47,12 @@ export function DashboardTopNav({
         </div>
 
         <div className="flex items-center gap-3">
-          <ConnectRepoButton size="sm" className="hidden sm:inline-flex" />
+          <ConnectRepoButton
+  user={user}
+  hasConnectedRepository={hasConnectedRepository}
+  size="sm"
+  className="hidden sm:inline-flex"
+/>
           <div className="md:hidden">
             <UserNav user={user} />
           </div>

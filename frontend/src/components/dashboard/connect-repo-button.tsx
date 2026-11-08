@@ -7,20 +7,25 @@ import { useState } from "react";
 import { ConnectRepoDialog } from "@/components/dashboard/connect-repo-dialog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import type { AuthUser } from "@/auth/types";
+import { disconnectRepository } from "@/lib/api/chat";
 
 interface ConnectRepoButtonProps {
+  user: AuthUser;
+  hasConnectedRepository: boolean;
+
   className?: string;
   size?: "default" | "sm" | "lg";
   variant?: "default" | "outline";
-  disabled?: boolean;
   disabledReason?: string;
 }
 
 export function ConnectRepoButton({
+  user,
+  hasConnectedRepository,
   className,
   size = "default",
   variant = "default",
-  disabled = false,
   disabledReason = "Disconnect the current repository before connecting a new one.",
 }: ConnectRepoButtonProps) {
   const [open, setOpen] = useState(false);
@@ -29,25 +34,49 @@ export function ConnectRepoButton({
   return (
     <>
       <Button
-        type="button"
-        size={size}
-        variant={variant}
-        className={cn("gap-2", className)}
-        disabled={disabled}
-        title={disabled ? disabledReason : undefined}
-        onClick={() => setOpen(true)}
-      >
-        <Plus className="size-4" />
-        Connect Repository
-      </Button>
+  type="button"
+  size={size}
+  variant={variant}
+  className={cn("gap-2", className)}
+  title={
+    hasConnectedRepository
+      ? "Change the currently connected repository."
+      : undefined
+  }
+  onClick={async () => {
+  if (!hasConnectedRepository) {
+    setOpen(true);
+    return;
+  }
 
-      {!disabled && (
-        <ConnectRepoDialog
-          open={open}
-          onOpenChange={setOpen}
-          onConnected={() => router.refresh()}
-        />
-      )}
+  const confirmed = window.confirm(
+    "Changing the repository will remove the current repository, its embeddings, and its local clone. Continue?"
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    await disconnectRepository(user);
+    router.refresh();
+    setOpen(true);
+  } catch (error) {
+    alert("Failed to disconnect the current repository.");
+  }
+}}
+>
+  <Plus className="size-4" />
+  {hasConnectedRepository
+    ? "Change Repository"
+    : "Connect Repository"}
+</Button>
+
+      <ConnectRepoDialog
+  open={open}
+  onOpenChange={setOpen}
+  onConnected={() => router.refresh()}
+/>
     </>
   );
 }
