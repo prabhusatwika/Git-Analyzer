@@ -28,3 +28,16 @@ export async function askRepositoryAI(
     },
   });
 }
+
+export async function disconnectRepository(
+  user: AuthUser
+) {
+  return backendFetch<{
+    success: boolean;
+    message: string;
+  }>({
+    method: "DELETE",
+    path: "/repositories/current",
+    user,
+  });
+}

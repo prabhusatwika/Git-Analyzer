@@ -28,7 +28,8 @@ export default async function DashboardPage() {
 
         <ConnectRepoButton
           className="w-full sm:w-auto"
-          disabled={data.hasConnectedRepository}
+          user={user}
+          hasConnectedRepository={data.hasConnectedRepository}
         />
       </div>
 
@@ -40,6 +41,7 @@ export default async function DashboardPage() {
           />
 
           <RecentReposSection
+            user={user}
             connectedRepository={data.connectedRepository}
           />
 

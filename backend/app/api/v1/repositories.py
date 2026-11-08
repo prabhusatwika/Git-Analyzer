@@ -46,3 +46,31 @@ async def analyze_public_repository(
 @router.get("/current")
 async def get_current_repository():
     return current_repository_service.load()
+
+@router.delete("/current")
+async def delete_current_repository():
+
+    repository = current_repository_service.load()
+
+    if repository is None:
+        return {
+            "success": False,
+            "message": "No repository connected."
+        }
+
+    repository_name = repository["name"]
+
+    indexing_service.delete_repository_embeddings(
+        repository_name
+    )
+
+    clone_service.delete_repository(
+        repository_name
+    )
+
+    current_repository_service.clear()
+
+    return {
+        "success": True,
+        "message": "Repository disconnected."
+    }

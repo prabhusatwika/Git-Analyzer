@@ -18,7 +18,11 @@ export interface DashboardNavItem {
 export const DASHBOARD_NAV_ITEMS: DashboardNavItem[] = [
   { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
   { label: "Repositories", href: "/dashboard#repositories", icon: GitBranch },
-  { label: "AI Chat", href: "/dashboard#ai-chat", icon: MessageSquareText, disabled: true },
+  {
+  label: "AI Chat",
+  href: "/dashboard/ai-chat",
+  icon: MessageSquareText,
+},
   { label: "Settings", href: "/dashboard#settings", icon: Settings, disabled: true },
 ];
 

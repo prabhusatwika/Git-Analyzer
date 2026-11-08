@@ -63,3 +63,30 @@ class SemanticSearchService:
         print("=" * 60)
 
         return results
+    def filter_results_by_file(self, search_results, file_name: str):
+        """
+        Filter search results to include only chunks belonging to a specific file.
+        """
+
+        documents = search_results.get("documents", [[]])[0]
+        metadatas = search_results.get("metadatas", [[]])[0]
+        distances = search_results.get("distances", [[]])[0]
+
+        filtered_docs = []
+        filtered_meta = []
+        filtered_dist = []
+
+        for doc, meta, dist in zip(documents, metadatas, distances):
+
+            file_path = meta.get("file_path", "")
+
+            if file_name.lower() in file_path.lower():
+                filtered_docs.append(doc)
+                filtered_meta.append(meta)
+                filtered_dist.append(dist)
+
+        return {
+            "documents": [filtered_docs],
+            "metadatas": [filtered_meta],
+            "distances": [filtered_dist],
+        }

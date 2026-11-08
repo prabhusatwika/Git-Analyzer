@@ -16,6 +16,22 @@ class RepositoryIndexingService:
 
         repository_name = result["repository_name"]
         chunks = result["chunks"]
+        print("=" * 60)
+        print("CHUNK SUMMARY")
+
+        seen = set()
+
+        for chunk in chunks:
+            fp = chunk["file_path"]
+
+            if fp in seen:
+                print("Duplicate file:", fp)
+
+            seen.add(fp)
+
+        print("Unique files:", len(seen))
+        print("Total chunks:", len(chunks))
+        print("=" * 60)
 
         print(f"Found {len(chunks)} chunks")
 
@@ -65,3 +81,16 @@ class RepositoryIndexingService:
             "chunks": len(chunks),
             "stored": stored,
         }
+    
+    def delete_repository_embeddings(self, repository_name: str):
+        try:
+            self.chroma_service.collection.delete(
+                where={
+                    "repository": repository_name
+                }
+            )
+
+            print(f"Deleted embeddings for {repository_name}")
+
+        except Exception as e:
+            print(e)

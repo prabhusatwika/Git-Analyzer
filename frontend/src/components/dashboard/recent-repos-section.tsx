@@ -7,11 +7,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RECENT_REPOS_EMPTY_MESSAGE } from "@/lib/dashboard/constants";
 import type { ConnectedRepository } from "@/lib/dashboard/types";
 
+import type { AuthUser } from "@/auth/types";
+
 interface RecentReposSectionProps {
+  user: AuthUser;
   connectedRepository: ConnectedRepository | null;
 }
 
-export function RecentReposSection({ connectedRepository }: RecentReposSectionProps) {
+export function RecentReposSection({
+  user,
+  connectedRepository,
+}: RecentReposSectionProps) {
   const hasConnected = connectedRepository !== null;
 
   return (
@@ -19,10 +25,11 @@ export function RecentReposSection({ connectedRepository }: RecentReposSectionPr
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="text-base font-semibold">Repository</CardTitle>
         <ConnectRepoButton
-          size="sm"
-          variant="outline"
-          disabled={hasConnected}
-        />
+  user={user}
+  hasConnectedRepository={hasConnected}
+  size="sm"
+  variant="outline"
+/>
       </CardHeader>
       <CardContent>
         {connectedRepository ? (
@@ -32,7 +39,13 @@ export function RecentReposSection({ connectedRepository }: RecentReposSectionPr
             icon={FolderGit2}
             title="No repository connected"
             description={RECENT_REPOS_EMPTY_MESSAGE}
-            action={<ConnectRepoButton variant="outline" />}
+            action={
+  <ConnectRepoButton
+    user={user}
+    hasConnectedRepository={false}
+    variant="outline"
+  />
+}
           />
         )}
       </CardContent>

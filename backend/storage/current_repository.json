@@ -1,13 +1,13 @@
 {
-  "github_id": 1019401953,
-  "name": "QuickGigApp",
-  "full_name": "prabhusatwika/QuickGigApp",
+  "github_id": 1238892667,
+  "name": "stock-price-prediction",
+  "full_name": "prabhusatwika/stock-price-prediction",
   "owner": "prabhusatwika",
-  "description": null,
-  "language": "JavaScript",
+  "description": "AI-powered stock market prediction platform with real-time analytics, machine learning forecasting, interactive charts, and financial insights built using FastAPI, React, and Python.",
+  "language": "TypeScript",
   "stars": 0,
   "forks": 0,
-  "default_branch": "master",
+  "default_branch": "main",
   "visibility": "public",
-  "html_url": "https://github.com/prabhusatwika/QuickGigApp"
+  "html_url": "https://github.com/prabhusatwika/stock-price-prediction"
 }

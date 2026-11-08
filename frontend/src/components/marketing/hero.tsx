@@ -33,12 +33,10 @@ export function Hero() {
 
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button size="lg" className="gap-2 px-6">
-            Start for Free
+            Start 
             <ArrowRight className="size-4" />
           </Button>
-          <Button size="lg" variant="outline" className="px-6">
-            Watch Demo
-          </Button>
+          
         </div>
 
         <div className="w-full max-w-4xl">
