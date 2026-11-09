@@ -8,6 +8,4 @@ router = APIRouter(
 
 @router.get("/")
 async def analysis_health():
-    return {
-        "message": "Analysis API is working"
-    }
+    return {"message": "Analysis API is working"}

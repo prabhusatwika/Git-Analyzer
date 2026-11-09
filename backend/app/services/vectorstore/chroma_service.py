@@ -2,16 +2,11 @@ import chromadb
 
 
 class ChromaService:
-
     def __init__(self):
 
-        self.client = chromadb.PersistentClient(
-            path="storage/chroma"
-        )
+        self.client = chromadb.PersistentClient(path="storage/chroma")
 
-        self.collection = self.client.get_or_create_collection(
-            name="repository_chunks"
-        )
+        self.collection = self.client.get_or_create_collection(name="repository_chunks")
 
     def add_embedding(
         self,
@@ -22,7 +17,6 @@ class ChromaService:
     ):
 
         try:
-
             self.collection.add(
                 ids=[chunk_id],
                 embeddings=[embedding],
@@ -31,7 +25,6 @@ class ChromaService:
             )
 
         except Exception as e:
-
             print(f"Error storing {chunk_id}: {e}")
 
     def count_embeddings(self):

@@ -54,46 +54,14 @@ export function Hero() {
           </p>
         </div>
 
-        {/* CTA */}
-        <div className="flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
-
-          <Button
-            size="lg"
-            className="h-12 gap-3 rounded-xl bg-[#52634D] px-7 text-sm font-semibold text-white shadow-lg shadow-[#52634D]/15 transition-all duration-300 hover:-translate-y-1 hover:bg-[#3F503B] hover:shadow-xl"
-            render={<Link href="/login" />}
-          >
-            Explore Git-Analyzer
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button size="lg" className="gap-2 px-6">
+            Start for Free
             <ArrowRight className="size-4" />
           </Button>
-
-          <Button
-            size="lg"
-            variant="outline"
-            className="h-12 gap-2 rounded-xl border-[#D8D7CB] bg-[#FFFEFA]/80 px-7 text-sm font-medium text-[#52634D] transition-all hover:border-[#A3B18A] hover:bg-[#EDF0E5]"
-            render={<Link href="#features" />}
-          >
-            Discover features
-            <ArrowUpRight className="size-4" />
+          <Button size="lg" variant="outline" className="px-6">
+            Watch Demo
           </Button>
-
-        </div>
-
-        {/* Trust statement */}
-        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs font-medium text-[#85887D]">
-          <span className="flex items-center gap-2">
-            <ShieldCheck className="size-4 text-[#718566]" />
-            Repository intelligence
-          </span>
-          <span className="hidden size-1 rounded-full bg-[#A3B18A] sm:block" />
-          <span className="flex items-center gap-2">
-            <Activity className="size-4 text-[#718566]" />
-            Actionable insights
-          </span>
-          <span className="hidden size-1 rounded-full bg-[#A3B18A] sm:block" />
-          <span className="flex items-center gap-2">
-            <GitBranch className="size-4 text-[#718566]" />
-            GitHub integration
-          </span>
         </div>
 
         {/* Dashboard preview */}

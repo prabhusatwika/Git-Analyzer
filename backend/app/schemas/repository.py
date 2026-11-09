@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict,  HttpUrl, Field
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl
 
 
 class ConnectRepositoryRequest(BaseModel):
@@ -41,12 +41,11 @@ class UserContextHeaders(BaseModel):
     email: str | None = None
 
 
-
 class AnalyzePublicRepositoryRequest(BaseModel):
     url: HttpUrl
 
 
-class ConnectRepositoryRequest(BaseModel):
+class ConnectRepositoryByNameRequest(BaseModel):
     owner: str
     repository: str
 

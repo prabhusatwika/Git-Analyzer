@@ -1,14 +1,20 @@
 from pathlib import Path
 
-from app.services.search.semantic_search_service import SemanticSearchService
 from app.services.llm.llm_service import LLMService
+from app.services.rag.file_detector import FileDetector
+from app.services.rag.prompt_service import PromptService
+from app.services.rag.question_classifier import QuestionClassifier
+from app.services.search.semantic_search_service import SemanticSearchService
 
 
 class RAGService:
-
     def __init__(self):
         self.search_service = SemanticSearchService()
         self.llm_service = LLMService()
+
+        self.prompt_service = PromptService()
+        self.question_classifier = QuestionClassifier()
+        self.file_detector = FileDetector()
 
     def ask(
         self,
@@ -16,11 +22,35 @@ class RAGService:
         question: str,
     ):
 
+        # Detect intent
+        intent = self.question_classifier.classify(question)
+
+        # Detect file name (if any)
+        file_name = self.file_detector.detect(question)
+
+        print("=" * 60)
+        print("Question:", question)
+        print("Intent:", intent)
+        print("Detected File:", file_name)
+        print("=" * 60)
+
+        # Semantic Search
         search_results = self.search_service.search(
             repository_name=repository_name,
             query=question,
-            n_results=8,
+            n_results=12,
         )
+
+        # File-specific retrieval
+        if file_name:
+            filtered_results = self.search_service.filter_results_by_file(
+                search_results,
+                file_name,
+            )
+
+            if filtered_results["documents"][0]:
+                print(f"Using file-specific retrieval for {file_name}")
+                search_results = filtered_results
 
         documents = search_results.get("documents", [[]])[0]
         metadatas = search_results.get("metadatas", [[]])[0]
@@ -35,17 +65,15 @@ class RAGService:
         context_parts = []
 
         for i, (doc, meta) in enumerate(zip(documents, metadatas), start=1):
-
             file_path = meta.get("file_path", "Unknown File")
             language = meta.get("language", "")
 
-            # Convert absolute path to repository-relative path
             try:
                 path = Path(file_path)
 
                 if "repositories" in path.parts:
                     index = path.parts.index("repositories")
-                    relative_path = "/".join(path.parts[index + 2:])
+                    relative_path = "/".join(path.parts[index + 2 :])
                 else:
                     relative_path = path.name
 
@@ -67,39 +95,23 @@ Language: {language}
 
         context = "\n".join(context_parts)
 
-        prompt = f"""
-You are RepoMind AI, an expert software engineering assistant.
+        if intent == "repository":
+            prompt = self.prompt_service.build_repository_prompt(
+                context=context,
+                question=question,
+            )
 
-You answer questions ONLY using the repository context provided below.
+        elif intent == "file":
+            prompt = self.prompt_service.build_file_prompt(
+                context=context,
+                question=question,
+            )
 
-Instructions:
-
-1. Use only the repository context.
-2. Never invent information.
-3. If multiple contexts describe the same feature, combine them into one explanation.
-4. Mention the relevant file path(s) whenever possible.
-5. Ignore unrelated files.
-6. If the answer cannot be determined from the repository context, reply exactly:
-
-"I couldn't find enough information in the repository to answer this."
-
-===========================
-Repository Context
-===========================
-
-{context}
-
-===========================
-User Question
-===========================
-
-{question}
-
-===========================
-Answer
-===========================
-"""
-
+        else:
+            prompt = self.prompt_service.build_code_prompt(
+                context=context,
+                question=question,
+            )
         try:
             answer = self.llm_service.generate_answer(prompt)
 
@@ -110,7 +122,6 @@ Answer
         seen = set()
 
         for meta in metadatas:
-
             file_path = meta.get("file_path", "")
             language = meta.get("language", "")
 
@@ -119,7 +130,7 @@ Answer
 
                 if "repositories" in path.parts:
                     index = path.parts.index("repositories")
-                    relative_path = "/".join(path.parts[index + 2:])
+                    relative_path = "/".join(path.parts[index + 2 :])
                 else:
                     relative_path = path.name
 
@@ -135,6 +146,12 @@ Answer
                         "language": language,
                     }
                 )
+
+        print("=" * 60)
+        print("RAG RESPONSE")
+        print("Context Chunks Used:", len(documents))
+        print("Source Files:", len(sources))
+        print("=" * 60)
 
         return {
             "answer": answer,

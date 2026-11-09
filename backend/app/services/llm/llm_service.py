@@ -2,7 +2,6 @@ from ollama import chat
 
 
 class LLMService:
-
     def generate_answer(self, prompt: str) -> str:
 
         response = chat(

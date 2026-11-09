@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 from app.models.enums import RepositoryStatus, RepositoryType
 
@@ -20,9 +19,9 @@ class Repository:
 
     default_branch: str
 
-    language: Optional[str]
+    language: str | None
 
-    description: Optional[str]
+    description: str | None
 
     repository_type: RepositoryType
 

@@ -15,6 +15,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { siteConfig } from "@/lib/constants";
+import { ConnectRepoButton } from "@/components/dashboard/connect-repo-button";
 
 interface DashboardTopNavProps {
   user: AuthUser;
@@ -55,6 +56,12 @@ export function DashboardTopNav({
         </div>
 
         <div className="flex items-center gap-3">
+          <ConnectRepoButton
+  user={user}
+  hasConnectedRepository={hasConnectedRepository}
+  size="sm"
+  className="hidden sm:inline-flex"
+/>
           <div className="md:hidden">
             <UserNav user={user} />
           </div>

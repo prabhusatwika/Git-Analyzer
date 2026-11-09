@@ -4,10 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { getGitHubAccessToken, requireAuth } from "@/lib/auth/session";
 import {
-  connectRepository,
-  disconnectRepository,
-  getConnectedRepository,
-  toDashboardRepository,
+  connectRepository
 } from "@/lib/api/repositories";
 import type { ConnectRepositoryPayload } from "@/lib/api/types";
 import {
@@ -20,6 +17,7 @@ import { BackendApiError } from "@/lib/api/types";
 export type ActionResult<T> =
   | { success: true; data: T }
   | { success: false; error: string };
+
 
 export async function fetchGitHubRepositoriesAction(params: {
   page?: number;
@@ -84,68 +82,36 @@ export async function fetchGitHubRepositoriesAction(params: {
 
 export async function connectRepositoryAction(
   payload: ConnectRepositoryPayload,
-): Promise<ActionResult<ReturnType<typeof toDashboardRepository>>> {
+): Promise<ActionResult<Awaited<ReturnType<typeof connectRepository>>>> {
   try {
     const user = await requireAuth();
-    const existing = await getConnectedRepository(user);
 
-    if (existing) {
+    const result = await connectRepository(user, payload);
+
+    revalidatePath("/dashboard");
+
+    return {
+      success: true,
+      data: result,
+    };
+  } catch (error) {
+    if (error instanceof BackendApiError) {
       return {
         success: false,
-        error: "A repository is already connected. Disconnect it before connecting a new one.",
+        error: error.message,
       };
     }
 
-    const record = await connectRepository(user, payload);
-    revalidatePath("/dashboard");
-
-    return { success: true, data: toDashboardRepository(record) };
-  } catch (error) {
-    if (error instanceof BackendApiError) {
-      return { success: false, error: error.message };
-    }
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to connect repository.",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to analyze repository.",
     };
   }
 }
 
-export async function disconnectRepositoryAction(): Promise<ActionResult<null>> {
-  try {
-    const user = await requireAuth();
-    await disconnectRepository(user);
-    revalidatePath("/dashboard");
-    return { success: true, data: null };
-  } catch (error) {
-    if (error instanceof BackendApiError) {
-      return { success: false, error: error.message };
-    }
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to disconnect repository.",
-    };
-  }
-}
 
-export async function getConnectedRepositoryAction(): Promise<
-  ActionResult<ReturnType<typeof toDashboardRepository> | null>
-> {
-  try {
-    const user = await requireAuth();
-    const record = await getConnectedRepository(user);
-    return {
-      success: true,
-      data: record ? toDashboardRepository(record) : null,
-    };
-  } catch (error) {
-    if (error instanceof BackendApiError) {
-      return { success: false, error: error.message };
-    }
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to load connected repository.",
-    };
-  }
-}
+
 

@@ -1,47 +1,116 @@
-import { Bot, Lock, Send, Sparkles } from "lucide-react";
+
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { Bot, Lock, Loader2 } from "lucide-react";
+
+import type { AuthUser } from "@/auth/types";
+import { askRepositoryAI } from "@/lib/api/chat";
+import { AI_CHAT_DISABLED_MESSAGE } from "@/lib/dashboard/constants";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { AI_CHAT_DISABLED_MESSAGE } from "@/lib/dashboard/constants";
+
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 interface AiChatSectionProps {
   enabled: boolean;
+  user: AuthUser;
+  repositoryName: string;
 }
 
-export function AiChatSection({ enabled }: AiChatSectionProps) {
+type ChatMessage = {
+  role: "user" | "assistant";
+  content: string;
+  sources?: {
+    file_path: string;
+    language: string;
+  }[];
+};
+
+export function AiChatSection({
+  enabled,
+  user,
+  repositoryName,
+}: AiChatSectionProps) {
+  const [question, setQuestion] = useState("");
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!messages.length) return;
+
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+    });
+  }, [messages, loading]);
+
+  async function handleSend() {
+    const currentQuestion = question.trim();
+
+    if (!currentQuestion || loading || !enabled || !repositoryName) {
+      return;
+    }
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "user",
+        content: currentQuestion,
+      },
+    ]);
+
+    setQuestion("");
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await askRepositoryAI(
+        user,
+        repositoryName,
+        currentQuestion
+      );
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: response.answer,
+          sources: response.sources,
+        },
+      ]);
+    } catch (err) {
+      console.error("AI Chat error:", err);
+      setError("Failed to contact AI. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <Card
-      className="scroll-mt-24 overflow-hidden rounded-2xl border border-[#DEDCD1] bg-[#FFFEFA] shadow-sm"
-    >
-      <CardHeader className="border-b border-[#EEECE3] px-6 py-5">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <span className="flex size-10 items-center justify-center rounded-xl bg-[#E8EADF]">
-              <Bot className="size-[19px] text-[#52634D]" />
-            </span>
+    <Card id="ai-chat" className="border-border/60 scroll-mt-20">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
+        <div className="flex items-center gap-2">
+          <CardTitle className="text-base font-semibold">
+            AI Chat
+          </CardTitle>
 
-            <div>
-              <CardTitle className="text-base font-semibold text-[#303A32]">
-                AI Chat
-              </CardTitle>
-              <p className="mt-0.5 text-xs text-[#85877D]">
-                Your intelligent repository assistant
-              </p>
-            </div>
-          </div>
-
-          {enabled ? (
-            <Badge className="gap-1.5 border border-[#C9D7C1] bg-[#E5EDDF] text-[#52634D] hover:bg-[#E5EDDF]">
-              <span className="size-1.5 rounded-full bg-[#66845B]" />
-              Available
-            </Badge>
-          ) : (
-            <Badge
-              variant="outline"
-              className="gap-1.5 border-[#DEDCD1] bg-[#F8F7F1] text-[#85877D]"
-            >
+          {!enabled && (
+            <Badge variant="secondary" className="gap-1">
               <Lock className="size-3" />
               Locked
             </Badge>
@@ -49,65 +118,268 @@ export function AiChatSection({ enabled }: AiChatSectionProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-5 p-5 sm:p-6">
+      <CardContent className="space-y-4">
         {!enabled ? (
-          <div className="flex flex-col items-center rounded-2xl border border-dashed border-[#DCDDD0] bg-[#F8F7F1] px-5 py-10 text-center">
-            <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-[#E8EADF]">
-              <Sparkles className="size-6 text-[#52634D]" />
+          <div className="flex flex-col items-center rounded-xl border border-dashed bg-muted/30 px-6 py-10 text-center">
+            <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-violet-500/10">
+              <Bot className="size-6 text-violet-600 dark:text-violet-400" />
             </div>
 
-            <p className="text-sm font-semibold text-[#303A32]">
-              Your AI assistant is waiting
+            <p className="text-sm font-medium">
+              AI Chat is not available yet
             </p>
 
-            <p className="mt-2 max-w-md text-sm leading-6 text-[#777B72]">
+            <p className="mt-1 max-w-md text-sm text-muted-foreground">
               {AI_CHAT_DISABLED_MESSAGE}
             </p>
           </div>
         ) : (
-          <div className="rounded-2xl border border-[#DEDCD1] bg-[#F8F7F1] p-5">
-            <div className="flex items-start gap-3">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#E8EADF]">
-                <Bot className="size-[19px] text-[#52634D]" />
-              </span>
+          <>
+            <div className="rounded-lg border bg-muted/30 p-4 text-sm text-muted-foreground">
+              Ask questions about commit history, pull request risk,
+              code ownership, and your repository.
+            </div>
 
-              <div>
-                <p className="text-sm font-semibold text-[#303A32]">
-                  What would you like to explore?
-                </p>
+            <div className="max-h-[500px] space-y-4 overflow-y-auto pr-2">
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`rounded-xl border p-5 shadow-sm ${
+                    message.role === "user"
+                      ? "bg-violet-50 dark:bg-violet-950/20"
+                      : "bg-background"
+                  }`}
+                >
+                  {message.role === "user" ? (
+                    <>
+                      <h4 className="mb-2 font-semibold">You</h4>
 
-                <p className="mt-1.5 text-sm leading-6 text-[#777B72]">
-                  Ask questions about commit history, pull request risk, code
-                  ownership, or repository insights.
-                </p>
+                      <p className="whitespace-pre-wrap text-sm">
+                        {message.content}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <h4 className="mb-2 font-semibold">
+                        AI Response
+                      </h4>
+
+                      <div className="prose prose-sm max-w-none break-words dark:prose-invert">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            code({ children, className, ...props }) {
+                              const match =
+                                /language-(\w+)/.exec(className || "");
+
+                              if (match) {
+                                return (
+                                  <SyntaxHighlighter
+                                    style={oneDark}
+                                    language={match[1]}
+                                    PreTag="div"
+                                    customStyle={{
+                                      borderRadius: "10px",
+                                      padding: "16px",
+                                      overflowX: "auto",
+                                      fontSize: "14px",
+                                    }}
+                                  >
+                                    {String(children).replace(/\n$/, "")}
+                                  </SyntaxHighlighter>
+                                );
+                              }
+
+                              return (
+                                <code
+                                  className="rounded-md bg-muted px-1.5 py-1 font-mono text-[13px]"
+                                  {...props}
+                                >
+                                  {children}
+                                </code>
+                              );
+                            },
+
+                            h1: ({ children }) => (
+                              <h1 className="mb-4 mt-6 text-3xl font-bold">
+                                {children}
+                              </h1>
+                            ),
+
+                            h2: ({ children }) => (
+                              <h2 className="mb-3 mt-5 text-2xl font-semibold">
+                                {children}
+                              </h2>
+                            ),
+
+                            h3: ({ children }) => (
+                              <h3 className="mb-2 mt-4 text-xl font-semibold">
+                                {children}
+                              </h3>
+                            ),
+
+                            p: ({ children }) => (
+                              <p className="mb-3 leading-7">
+                                {children}
+                              </p>
+                            ),
+
+                            ul: ({ children }) => (
+                              <ul className="mb-3 list-disc space-y-1 pl-6">
+                                {children}
+                              </ul>
+                            ),
+
+                            ol: ({ children }) => (
+                              <ol className="mb-3 list-decimal space-y-1 pl-6">
+                                {children}
+                              </ol>
+                            ),
+
+                            li: ({ children }) => <li>{children}</li>,
+
+                            strong: ({ children }) => (
+                              <strong className="font-semibold">
+                                {children}
+                              </strong>
+                            ),
+
+                            em: ({ children }) => (
+                              <em className="italic">{children}</em>
+                            ),
+
+                            blockquote: ({ children }) => (
+                              <blockquote className="my-4 border-l-4 border-violet-500 pl-4 italic text-muted-foreground">
+                                {children}
+                              </blockquote>
+                            ),
+
+                            table: ({ children }) => (
+                              <div className="my-4 overflow-x-auto">
+                                <table className="min-w-full border border-border">
+                                  {children}
+                                </table>
+                              </div>
+                            ),
+
+                            thead: ({ children }) => (
+                              <thead className="bg-muted">
+                                {children}
+                              </thead>
+                            ),
+
+                            tbody: ({ children }) => <tbody>{children}</tbody>,
+
+                            tr: ({ children }) => (
+                              <tr className="border-b">{children}</tr>
+                            ),
+
+                            th: ({ children }) => (
+                              <th className="border px-4 py-2 text-left font-semibold">
+                                {children}
+                              </th>
+                            ),
+
+                            td: ({ children }) => (
+                              <td className="border px-4 py-2">
+                                {children}
+                              </td>
+                            ),
+
+                            hr: () => <hr className="my-6 border-border" />,
+                          }}
+                        >
+                          {message.content}
+                        </ReactMarkdown>
+                      </div>
+
+                      {message.sources && message.sources.length > 0 && (
+                        <div className="mt-4 border-t pt-4">
+                          <h5 className="mb-2 text-sm font-semibold">
+                            Sources
+                          </h5>
+
+                          <div className="space-y-2">
+                            {message.sources.map((source, i) => (
+                              <div
+                                key={i}
+                                className="flex items-center justify-between gap-3 rounded-md border px-3 py-2 text-sm"
+                              >
+                                <span className="break-all">
+                                  📄 {source.file_path}
+                                </span>
+
+                                <span className="shrink-0 text-muted-foreground">
+                                  {source.language}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              ))}
+
+              {loading && (
+                <div className="rounded-lg border bg-background p-4">
+                  <h4 className="mb-2 font-semibold">AI Response</h4>
+
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Loader2 className="size-4 animate-spin" />
+                    Thinking...
+                  </div>
+                </div>
+              )}
+
+              {error && (
+                <p className="text-sm text-destructive">{error}</p>
+              )}
+
+              <div ref={bottomRef} />
+            </div>
+
+            <div className="space-y-2">
+              <Textarea
+                placeholder="Ask about your repository..."
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                disabled={loading}
+                rows={3}
+                className="resize-none"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    void handleSend();
+                  }
+                }}
+              />
+
+              <div className="flex justify-end">
+                <Button
+                  type="button"
+                  onClick={() => void handleSend()}
+                  disabled={
+                    !question.trim() ||
+                    loading ||
+                    !enabled ||
+                    !repositoryName
+                  }
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    "Send message"
+                  )}
+                </Button>
               </div>
             </div>
-          </div>
+          </>
         )}
-
-        <div className="space-y-3">
-          <Textarea
-            placeholder={
-              enabled
-                ? "Ask about your repository..."
-                : "Connect a repository to start chatting..."
-            }
-            disabled={!enabled}
-            rows={3}
-            className="min-h-28 resize-none rounded-xl border-[#DEDCD1] bg-[#FFFEFA] text-sm text-[#303A32] placeholder:text-[#A3A59A] focus-visible:ring-[#8A9A7C] disabled:cursor-not-allowed disabled:opacity-60"
-          />
-
-          <div className="flex justify-end">
-            <Button
-              type="button"
-              disabled={!enabled}
-              className="gap-2 rounded-xl bg-[#52634D] px-5 text-white hover:bg-[#3F503B] disabled:bg-[#D8D9D0] disabled:text-[#92958A]"
-            >
-              <Send className="size-4" />
-              Send message
-            </Button>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );

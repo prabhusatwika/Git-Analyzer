@@ -46,6 +46,11 @@ pythonpath = ["."]
 line-length = 100
 target-version = "py311"
 
+extend-exclude = [
+    "storage/repositories/next.js",
+    "storage/repositories/stock-price-prediction",
+]
+
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
 
