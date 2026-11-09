@@ -18,11 +18,11 @@ export function DashboardShell({
   hasConnectedRepository = false,
 }: DashboardShellProps) {
   return (
-    <div className="flex h-full min-h-screen">
+    <div className="flex min-h-screen bg-[#F4F2E9]">
       <DashboardSidebar
         user={user}
         hasConnectedRepository={hasConnectedRepository}
-        className="hidden md:flex"
+        className="hidden shrink-0 md:flex"
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
@@ -31,7 +31,10 @@ export function DashboardShell({
           title={title}
           hasConnectedRepository={hasConnectedRepository}
         />
-        <div className="flex-1 overflow-y-auto">{children}</div>
+
+        <div className="min-w-0 flex-1">
+          {children}
+        </div>
       </div>
     </div>
   );

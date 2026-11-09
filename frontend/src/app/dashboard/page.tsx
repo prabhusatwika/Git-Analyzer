@@ -1,3 +1,4 @@
+
 import { ConnectRepoButton } from "@/components/dashboard/connect-repo-button";
 import { AiChatSection } from "@/components/dashboard/ai-chat-section";
 import { RecentActivitySection } from "@/components/dashboard/recent-activity-section";
@@ -18,19 +19,17 @@ export default async function DashboardPage() {
           <h2 className="text-2xl font-semibold tracking-tight">
             Welcome back, {user.name ?? user.username}
           </h2>
-
           <p className="text-sm text-muted-foreground">
             {data.hasConnectedRepository
               ? `Analyzing ${data.connectedRepository?.fullName}. Review stats and activity below.`
               : "Connect a GitHub repository to unlock analysis, statistics, and AI chat."}
           </p>
         </div>
-
         <ConnectRepoButton
-          className="w-full sm:w-auto"
-          user={user}
-          hasConnectedRepository={data.hasConnectedRepository}
-        />
+  user={user}
+  hasConnectedRepository={data.hasConnectedRepository}
+  className="w-full sm:w-auto"
+/>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-3">
@@ -39,25 +38,20 @@ export default async function DashboardPage() {
             stats={data.stats}
             hasConnectedRepository={data.hasConnectedRepository}
           />
-
-          <RecentReposSection
-            user={user}
-            connectedRepository={data.connectedRepository}
-          />
-
+         <RecentReposSection
+  user={user}
+  connectedRepository={data.connectedRepository}
+/>
           <AiChatSection
-            enabled={data.hasConnectedRepository}
-            user={user}
-            repositoryName={data.connectedRepository?.name ?? ""}
-          />
+  enabled={data.hasConnectedRepository}
+  user={user}
+  repositoryName={data.connectedRepository?.fullName ?? ""}
+/>
         </div>
 
         <div className="space-y-6">
           <UserProfileCard user={user} />
-
-          <RecentActivitySection
-            activity={data.recentActivity}
-          />
+          <RecentActivitySection activity={data.recentActivity} />
         </div>
       </div>
     </div>

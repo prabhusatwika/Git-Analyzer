@@ -10,14 +10,12 @@ import type { ConnectedRepository } from "@/lib/dashboard/types";
 import type { AuthUser } from "@/auth/types";
 
 interface RecentReposSectionProps {
-  user: AuthUser;
   connectedRepository: ConnectedRepository | null;
+  user: AuthUser;
+  
 }
 
-export function RecentReposSection({
-  user,
-  connectedRepository,
-}: RecentReposSectionProps) {
+export function RecentReposSection({ user, connectedRepository }: RecentReposSectionProps) {
   const hasConnected = connectedRepository !== null;
 
   return (
@@ -31,9 +29,13 @@ export function RecentReposSection({
   variant="outline"
 />
       </CardHeader>
-      <CardContent>
+
+      <CardContent className="p-5 sm:p-6">
         {connectedRepository ? (
-          <ConnectedRepoCard repository={connectedRepository} />
+          <ConnectedRepoCard
+  repository={connectedRepository}
+  user={user}
+/>
         ) : (
           <EmptyState
             icon={FolderGit2}

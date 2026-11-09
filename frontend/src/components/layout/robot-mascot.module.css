@@ -1,0 +1,32 @@
+
+.track {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  width: 68px;
+  height: 76px;
+  flex: 0 0 68px;
+
+  overflow: visible;
+  pointer-events: none;
+}
+
+.wavingImage {
+  display: block;
+  width: 64px;
+  height: 76px;
+
+  object-fit: contain;
+  object-position: bottom center;
+
+  user-select: none;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wavingImage {
+    animation: none;
+  }
+}

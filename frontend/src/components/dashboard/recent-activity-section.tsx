@@ -1,7 +1,13 @@
+
 import { Activity } from "lucide-react";
 
 import { EmptyState } from "@/components/dashboard/empty-state";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { RECENT_ACTIVITY_EMPTY_MESSAGE } from "@/lib/dashboard/constants";
 import type { ActivityEvent } from "@/lib/dashboard/types";
 
@@ -16,13 +22,29 @@ const ACTIVITY_LABELS: Record<ActivityEvent["type"], string> = {
   analysis: "Analysis",
 };
 
-export function RecentActivitySection({ activity }: RecentActivitySectionProps) {
+export function RecentActivitySection({
+  activity,
+}: RecentActivitySectionProps) {
   return (
-    <Card className="border-border/60">
-      <CardHeader>
-        <CardTitle className="text-base font-semibold">Recent activity</CardTitle>
+    <Card className="overflow-hidden rounded-2xl border border-[#DEDCD1] bg-[#FFFEFA] shadow-sm">
+      <CardHeader className="border-b border-[#EEECE3] px-5 py-5">
+        <div className="flex items-center gap-3">
+          <span className="flex size-9 items-center justify-center rounded-xl bg-[#E8E8DC]">
+            <Activity className="size-[18px] text-[#52634D]" />
+          </span>
+
+          <div>
+            <CardTitle className="text-base font-semibold text-[#303A32]">
+              Recent activity
+            </CardTitle>
+            <p className="mt-0.5 text-xs text-[#85877D]">
+              Latest repository updates
+            </p>
+          </div>
+        </div>
       </CardHeader>
-      <CardContent>
+
+      <CardContent className="p-5">
         {activity.length === 0 ? (
           <EmptyState
             icon={Activity}
@@ -30,19 +52,38 @@ export function RecentActivitySection({ activity }: RecentActivitySectionProps) 
             description={RECENT_ACTIVITY_EMPTY_MESSAGE}
           />
         ) : (
-          <ul className="space-y-4">
-            {activity.map((event) => (
+          <ul className="space-y-0">
+            {activity.map((event, index) => (
               <li
                 key={event.id}
-                className="flex gap-4 border-b pb-4 last:border-0 last:pb-0"
+                className="relative flex gap-3 pb-5 last:pb-0"
               >
-                <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium">
-                  {ACTIVITY_LABELS[event.type].charAt(0)}
+                <div className="relative flex shrink-0 flex-col items-center">
+                  <div className="z-10 flex size-9 items-center justify-center rounded-full border border-[#DDE4D6] bg-[#E8E8DC] text-sm font-semibold text-[#52634D]">
+                    {ACTIVITY_LABELS[event.type].charAt(0)}
+                  </div>
+
+                  {index !== activity.length - 1 && (
+                    <div className="absolute top-9 h-full w-px bg-[#E8E6DC]" />
+                  )}
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium">{event.title}</p>
-                  <p className="text-xs text-muted-foreground">{event.description}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
+
+                <div className="min-w-0 flex-1 space-y-1.5 pt-0.5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-sm font-semibold text-[#303A32]">
+                      {event.title}
+                    </p>
+
+                    <span className="rounded-md bg-[#F0F0E8] px-2 py-0.5 text-[10px] font-medium text-[#68745F]">
+                      {ACTIVITY_LABELS[event.type]}
+                    </span>
+                  </div>
+
+                  <p className="text-xs leading-5 text-[#777B72]">
+                    {event.description}
+                  </p>
+
+                  <p className="text-[11px] text-[#92958A]">
                     {event.repository} · {event.timestamp}
                   </p>
                 </div>

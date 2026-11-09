@@ -1,3 +1,4 @@
+
 import { REPO_STAT_DEFINITIONS } from "@/lib/dashboard/constants";
 import type { RepositoryStats } from "@/lib/dashboard/types";
 import { StatCard } from "@/components/dashboard/stat-card";
@@ -12,7 +13,10 @@ function formatStatValue(value: number | null, emptyValue: string): string {
   return value.toLocaleString();
 }
 
-export function RepoStatsCards({ stats, hasConnectedRepository }: RepoStatsCardsProps) {
+export function RepoStatsCards({
+  stats,
+  hasConnectedRepository,
+}: RepoStatsCardsProps) {
   const statValues: Record<string, number | null> = {
     commits: stats.commitsAnalyzed,
     "pull-requests": stats.pullRequests,
@@ -20,16 +24,27 @@ export function RepoStatsCards({ stats, hasConnectedRepository }: RepoStatsCards
   };
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {REPO_STAT_DEFINITIONS.map((def) => (
-        <StatCard
-          key={def.id}
-          icon={def.icon}
-          label={def.label}
-          value={formatStatValue(statValues[def.id], def.emptyValue)}
-          hint={hasConnectedRepository ? undefined : def.emptyHint}
-        />
-      ))}
-    </div>
+    <section aria-label="Repository statistics">
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-sm font-semibold tracking-tight text-[#303A32]">
+          Repository overview
+        </h2>
+        <span className="text-xs text-[#92958A]">
+          {hasConnectedRepository ? "Live statistics" : "Getting started"}
+        </span>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {REPO_STAT_DEFINITIONS.map((def) => (
+          <StatCard
+            key={def.id}
+            icon={def.icon}
+            label={def.label}
+            value={formatStatValue(statValues[def.id], def.emptyValue)}
+            hint={hasConnectedRepository ? undefined : def.emptyHint}
+          />
+        ))}
+      </div>
+    </section>
   );
 }
