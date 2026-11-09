@@ -6,11 +6,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.chat import router as chat_router
 from app.api.v1.router import api_router
 from app.core.config import settings
+from app.core.database import init_db
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    
+    init_db()
     yield
 
 
