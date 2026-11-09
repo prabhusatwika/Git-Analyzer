@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { signInWithGitHub } from "@/lib/auth/actions";
 
@@ -17,9 +18,12 @@ function GitHubIcon({ className }: { className?: string }) {
 export function LoginButton() {
   return (
     <form action={signInWithGitHub}>
-      <Button type="submit" className="h-10 w-full gap-2">
-        <GitHubIcon className="size-4" />
-        Login with GitHub
+      <Button
+        type="submit"
+        className="h-12 w-full gap-3 rounded-xl bg-[#52634D] text-white shadow-md shadow-[#52634D]/15 transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#3F503B] hover:shadow-lg hover:shadow-[#52634D]/20"
+      >
+        <GitHubIcon className="size-5" />
+        <span className="font-medium">Continue with GitHub</span>
       </Button>
     </form>
   );

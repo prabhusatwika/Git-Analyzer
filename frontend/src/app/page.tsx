@@ -1,3 +1,4 @@
+
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { FAQ } from "@/components/marketing/faq";
