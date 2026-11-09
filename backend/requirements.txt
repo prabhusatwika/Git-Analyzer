@@ -24,3 +24,4 @@ orjson
 rich
 ollama
 sentence-transformers
+psycopg[binary]
