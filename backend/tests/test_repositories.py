@@ -18,7 +18,10 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 
 
 @pytest.fixture
-def client():
+def client(monkeypatch):
+    # Prevent startup from connecting to the configured PostgreSQL database.
+    monkeypatch.setattr("app.main.init_db", lambda: None)
+
     Base.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
 
@@ -29,9 +32,12 @@ def client():
             pass
 
     app.dependency_overrides[get_db] = override_get_db
+
     with TestClient(app) as test_client:
         yield test_client
+
     app.dependency_overrides.clear()
+    db.close()
     Base.metadata.drop_all(bind=engine)
 
 
