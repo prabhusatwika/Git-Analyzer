@@ -18,7 +18,10 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 
 
 @pytest.fixture
-def client():
+def client(monkeypatch):
+    # Prevent startup from connecting to the configured PostgreSQL database.
+    monkeypatch.setattr("app.main.init_db", lambda: None)
+
     Base.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
 
@@ -29,9 +32,12 @@ def client():
             pass
 
     app.dependency_overrides[get_db] = override_get_db
+
     with TestClient(app) as test_client:
         yield test_client
+
     app.dependency_overrides.clear()
+    db.close()
     Base.metadata.drop_all(bind=engine)
 
 
@@ -57,7 +63,9 @@ CONNECT_PAYLOAD = {
 
 
 def test_connect_and_get_repository(client):
-    response = client.post("/api/v1/repositories/connect", json=CONNECT_PAYLOAD, headers=USER_HEADERS)
+    response = client.post(
+        "/api/v1/repositories/connect", json=CONNECT_PAYLOAD, headers=USER_HEADERS
+    )
     assert response.status_code == 201
     data = response.json()
     assert data["full_name"] == "octocat/Hello-World"
@@ -69,7 +77,9 @@ def test_connect_and_get_repository(client):
 
 def test_connect_duplicate_returns_conflict(client):
     client.post("/api/v1/repositories/connect", json=CONNECT_PAYLOAD, headers=USER_HEADERS)
-    response = client.post("/api/v1/repositories/connect", json=CONNECT_PAYLOAD, headers=USER_HEADERS)
+    response = client.post(
+        "/api/v1/repositories/connect", json=CONNECT_PAYLOAD, headers=USER_HEADERS
+    )
     assert response.status_code == 409
 
 

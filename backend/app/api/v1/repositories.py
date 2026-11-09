@@ -2,9 +2,9 @@ from fastapi import APIRouter
 
 from app.schemas.github_repository import PublicRepositoryRequest
 from app.services.github.github_service import GitHubService
+from app.services.indexing.repository_indexing_service import RepositoryIndexingService
 from app.services.repository.clone_service import CloneService
 from app.services.repository.current_repository_service import CurrentRepositoryService
-from app.services.indexing.repository_indexing_service import RepositoryIndexingService
 
 router = APIRouter(
     prefix="/repositories",
@@ -47,30 +47,21 @@ async def analyze_public_repository(
 async def get_current_repository():
     return current_repository_service.load()
 
+
 @router.delete("/current")
 async def delete_current_repository():
 
     repository = current_repository_service.load()
 
     if repository is None:
-        return {
-            "success": False,
-            "message": "No repository connected."
-        }
+        return {"success": False, "message": "No repository connected."}
 
     repository_name = repository["name"]
 
-    indexing_service.delete_repository_embeddings(
-        repository_name
-    )
+    indexing_service.delete_repository_embeddings(repository_name)
 
-    clone_service.delete_repository(
-        repository_name
-    )
+    clone_service.delete_repository(repository_name)
 
     current_repository_service.clear()
 
-    return {
-        "success": True,
-        "message": "Repository disconnected."
-    }
+    return {"success": True, "message": "Repository disconnected."}

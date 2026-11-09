@@ -40,10 +40,7 @@ class GitHubService:
 
         owner, repo = self.parse_repository_url(url)
 
-        api_url = (
-            f"{GITHUB_API_BASE_URL}"
-            f"{GITHUB_REPOSITORY_API}/{owner}/{repo}"
-        )
+        api_url = f"{GITHUB_API_BASE_URL}{GITHUB_REPOSITORY_API}/{owner}/{repo}"
 
         response = requests.get(
             api_url,

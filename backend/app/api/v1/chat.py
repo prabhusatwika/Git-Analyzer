@@ -13,9 +13,7 @@ rag_service = RAGService()
 
 @router.get("/")
 async def chat_health():
-    return {
-        "message": "Chat API is working"
-    }
+    return {"message": "Chat API is working"}
 
 
 @router.post(

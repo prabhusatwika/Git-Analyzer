@@ -18,9 +18,7 @@ parser = FileParser()
 
 @router.get("/")
 async def parser_health():
-    return {
-        "message": "Parser Ready"
-    }
+    return {"message": "Parser Ready"}
 
 
 @router.post(
@@ -38,7 +36,6 @@ async def scan_repository(
     markdown_files = 0
 
     for file in files:
-
         suffix = file.suffix.lower()
 
         if suffix == ".py":

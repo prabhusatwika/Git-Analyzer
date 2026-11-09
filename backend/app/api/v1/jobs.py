@@ -8,6 +8,4 @@ router = APIRouter(
 
 @router.get("/")
 async def jobs_health():
-    return {
-        "message": "Jobs API is working"
-    }
+    return {"message": "Jobs API is working"}

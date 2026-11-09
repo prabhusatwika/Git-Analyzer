@@ -1,10 +1,11 @@
+import os
+import shutil
+import stat
+import time
 from pathlib import Path
+
 from git import Repo
 
-import os
-import stat
-import shutil
-import time
 
 def remove_readonly(func, path, exc_info):
     """
@@ -14,6 +15,8 @@ def remove_readonly(func, path, exc_info):
     """
     os.chmod(path, stat.S_IWRITE)
     func(path)
+
+
 class CloneService:
     STORAGE_DIRECTORY = Path("storage/repositories")
 
@@ -28,14 +31,14 @@ class CloneService:
 
         if not destination.exists():
             Repo.clone_from(
-    str(clone_url),
-    str(destination),
-    depth=1,
-    single_branch=True,
-)
+                str(clone_url),
+                str(destination),
+                depth=1,
+                single_branch=True,
+            )
 
         return str(destination.resolve())
-    
+
     def delete_repository(self, repository_name: str):
         destination = self.STORAGE_DIRECTORY / repository_name
 
@@ -55,9 +58,7 @@ class CloneService:
                 return
 
             except PermissionError:
-                print(
-                    f"Repository is locked. Retrying ({attempt + 1}/3)..."
-                )
+                print(f"Repository is locked. Retrying ({attempt + 1}/3)...")
                 time.sleep(1)
 
         raise Exception(

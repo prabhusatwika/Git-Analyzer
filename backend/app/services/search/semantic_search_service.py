@@ -3,7 +3,6 @@ from app.services.vectorstore.chroma_service import ChromaService
 
 
 class SemanticSearchService:
-
     def __init__(self):
         self.embedding_model = LocalEmbeddingService()
         self.chroma = ChromaService()
@@ -25,9 +24,7 @@ class SemanticSearchService:
         results = self.chroma.collection.query(
             query_embeddings=[query_embedding],
             n_results=n_results,
-            where={
-                "repository": repository_name
-            },
+            where={"repository": repository_name},
             include=[
                 "documents",
                 "metadatas",
@@ -44,9 +41,7 @@ class SemanticSearchService:
         if documents:
             print("\nTop Results\n")
 
-            for i, (doc, meta, dist) in enumerate(
-                zip(documents, metadatas, distances), start=1
-            ):
+            for i, (doc, meta, dist) in enumerate(zip(documents, metadatas, distances), start=1):
                 print("-" * 60)
                 print(f"Result #{i}")
                 print("Distance:", dist)
@@ -63,6 +58,7 @@ class SemanticSearchService:
         print("=" * 60)
 
         return results
+
     def filter_results_by_file(self, search_results, file_name: str):
         """
         Filter search results to include only chunks belonging to a specific file.
@@ -77,7 +73,6 @@ class SemanticSearchService:
         filtered_dist = []
 
         for doc, meta, dist in zip(documents, metadatas, distances):
-
             file_path = meta.get("file_path", "")
 
             if file_name.lower() in file_path.lower():

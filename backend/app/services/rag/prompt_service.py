@@ -1,10 +1,13 @@
 class PromptService:
-
     def build_repository_prompt(
         self,
         context: str,
         question: str,
     ) -> str:
+        no_context_rule = (
+    'Only answer "I couldn\'t find enough information in the repository to answer this." '
+    "if none of the retrieved context is relevant."
+)
 
         return f"""
 You are Git-Analyzer AI, an expert software engineering assistant.
@@ -19,8 +22,7 @@ Rules:
 4. Infer the repository's purpose from the available evidence.
 5. If some information is missing, clearly mention what is known and what cannot be determined.
 6. Mention important file names naturally.
-7. Only answer "I couldn't find enough information in the repository to answer this." if none of the retrieved context is relevant.
-
+7. {no_context_rule}
 Repository Context
 ==================
 

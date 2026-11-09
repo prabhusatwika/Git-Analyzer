@@ -1,5 +1,5 @@
-from pathlib import Path
 import json
+from pathlib import Path
 
 
 class CurrentRepositoryService:
@@ -31,13 +31,12 @@ class CurrentRepositoryService:
         if not self.FILE.exists():
             return None
 
-        with open(self.FILE, "r", encoding="utf-8") as f:
+        with open(self.FILE, encoding="utf-8") as f:
             return json.load(f)
-    
+
     def clear(self):
         if self.FILE.exists():
             self.FILE.unlink()
-
 
     def exists(self):
         return self.FILE.exists()
